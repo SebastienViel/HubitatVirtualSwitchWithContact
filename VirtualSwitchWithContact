@@ -1,0 +1,60 @@
+/*
+ * Virtual contact Sensor with Switch and delay
+ *
+ * 
+ *
+ * Code derived from Ryan Casler
+ * 
+ */
+
+metadata {
+    definition (name: "Virtual contact Sensor with Switch + Dealy", namespace: "Sébastien", author: "Sebastien Viel") {
+        capability "Sensor"
+        capability "Contact Sensor"
+        capability "Switch"
+    }   
+}
+
+preferences {
+    section() {
+        input name: "openDelay", type: "bool", title: "Enable Delay for Open", defaultValue: false
+		input name: "delayOpen", type: "integer", title: "Number of seconds to delay Open", defaultValue: "0"
+		input name: "closedDelay", type: "bool", title: "Enable Delay for closed", defaultValue: false
+		input name: "delayclosed", type: "number", title: "Number of seconds to delay closed", defaultValue: "0"
+	}
+}
+
+def wet() {
+	sendEvent(name: "contact", value: "open")
+}
+
+def dry() {
+	sendEvent(name: "contact", value: "closed")
+}
+
+def on() {
+	unschedule()
+	sendEvent(name: "switch", value: "on")
+	if (openDelay){
+		def delay=(delayOpen.toInteger())
+		runIn (delay, open)
+	}
+	else{
+		sendEvent(name: "contact", value: "open")
+	}
+}
+
+def off() {
+	unschedule()
+    sendEvent(name: "switch", value: "off")
+	if (closedDelay){
+		def delay=(delayclosed.toInteger())
+		runIn (delay, closed)
+	}
+	else{
+			sendEvent(name: "contact", value: "closed")
+	}
+}
+
+def installed() {
+}
