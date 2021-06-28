@@ -24,11 +24,11 @@ preferences {
 	}
 }
 
-def wet() {
+def open() {
 	sendEvent(name: "contact", value: "open")
 }
 
-def dry() {
+def closed() {
 	sendEvent(name: "contact", value: "closed")
 }
 
