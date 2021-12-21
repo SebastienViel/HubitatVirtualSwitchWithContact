@@ -1,0 +1,60 @@
+/*
+ * Virtual Water Sensor with Switch and delay
+ *
+ * 
+ *
+ *   Code derived from Ryan Casler
+ * 
+ */
+
+metadata {
+    definition (name: "Virtual Water Sensor with Switch + Dealy", namespace: "Sébastien", author: "Sebastien Viel") {
+        capability "Sensor"
+        capability "Water Sensor"
+        capability "Switch"
+    }   
+}
+
+preferences {
+    section() {
+        input name: "wetDelay", type: "bool", title: "Enable Delay for Wet", defaultValue: false
+		input name: "delayWet", type: "integer", title: "Number of seconds to delay Wet", defaultValue: "0"
+		input name: "dryDelay", type: "bool", title: "Enable Delay for Dry", defaultValue: false
+		input name: "delayDry", type: "number", title: "Number of seconds to delay Dry", defaultValue: "0"
+	}
+}
+
+def wet() {
+	sendEvent(name: "water", value: "wet")
+}
+
+def dry() {
+	sendEvent(name: "water", value: "dry")
+}
+
+def on() {
+	unschedule()
+	sendEvent(name: "switch", value: "on")
+	if (wetDelay){
+		def delay=(delayWet.toInteger())
+		runIn (delay, wet)
+	}
+	else{
+		sendEvent(name: "water", value: "wet")
+	}
+}
+
+def off() {
+	unschedule()
+    sendEvent(name: "switch", value: "off")
+	if (dryDelay){
+		def delay=(delayDry.toInteger())
+		runIn (delay, dry)
+	}
+	else{
+			sendEvent(name: "water", value: "dry")
+	}
+}
+
+def installed() {
+}
