@@ -1,0 +1,54 @@
+metadata {
+	definition (name: "Virtual Switch", namespace: "hubitat", author: "Bruce Ravenel") {
+		capability "Switch"
+		capability "Refresh"
+	}
+	preferences {
+		input name: "autoOff", type: "enum", title: "Enable auto off", options: [0:"Disabled",500:"500ms",1000:"1s",1500:"1500ms",2000:"2s",5000:"5s",30000:"30s",60000:"60s",120000:"2m",300000:"5m",600000:"10m",900000:"15m",360000:"1h",7200000:"2h"], defaultValue: 0
+		input name: "logEnable", type: "bool", title: "Enable debug logging", defaultValue: true
+		input name: "txtEnable", type: "bool", title: "Enable descriptionText logging", defaultValue: true
+	}
+}
+
+void logsOff(){
+	log.warn "debug logging disabled..."
+	device.updateSetting("logEnable",[value:"false",type:"bool"])
+}
+
+void installed() {
+	log.warn "installed..."
+	off()
+	runIn(1800,logsOff)
+}
+
+void updated() {
+	log.info "updated..."
+	log.warn "debug logging is: ${logEnable == true}"
+	log.warn "description logging is: ${txtEnable == true}"
+	if (logEnable) runIn(1800,logsOff)
+}
+
+void parse(String description) {
+	if (logEnable) log.debug "parse ${description}"
+	if (description == "on") on()
+	else if (description == "off") off()
+}
+
+void refresh() {
+	sendSwitchEvent(device.currentValue("switch"))
+}
+
+void on() {
+	sendSwitchEvent("on")
+	if (autoOff != null && autoOff != "0") runInMillis(autoOff.toInteger(),off)
+}
+
+void off() {
+	sendSwitchEvent("off")
+}
+
+void sendSwitchEvent(value) {
+	String descriptionText = "${device.displayName} ${ (value == device.currentValue("switch")) ? "is" : "was turned" } ${value}"
+	if (txtEnable) log.info descriptionText
+	sendEvent(name:"switch", value:value, descriptionText:descriptionText)
+}
