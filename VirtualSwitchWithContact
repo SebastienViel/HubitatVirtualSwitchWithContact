@@ -8,7 +8,7 @@
  */
 
 metadata {
-    definition (name: "Virtual contact Sensor with Switch + Dealy", namespace: "Sébastien", author: "Sebastien Viel") {
+    definition (name: "Virtual contact Sensor with Switch + Dealy", namespace: "Sébastien", author: "Sebastien Viel", importUrl: "https://raw.githubusercontent.com/SebastienViel/HubitatVirtualSwitchWithContact/refs/heads/main/VirtualSwitchWithContact") {
         capability "Sensor"
         capability "Contact Sensor"
         capability "Switch"
